@@ -1,0 +1,28 @@
+[
+  {
+    "model": "assessment.answer",
+    "pk": 1,
+    "fields": {
+      "question": 1,
+      "text": "ありがとう",
+      "romaji_text": "Arigatou",
+      "english_text": "Thank you",
+      "example_sentence_romaji": "Arigatou!",
+      "example_sentence_english": "Thank you!",
+      "is_correct": true
+    }
+  },
+  {
+    "model": "assessment.answer",
+    "pk": 2,
+    "fields": {
+      "question": 1,
+      "text": "こんにちは",
+      "romaji_text": "Konnichiwa",
+      "english_text": "Hello",
+      "example_sentence_romaji": "Konnichiwa!",
+      "example_sentence_english": "Hello!",
+      "is_correct": false
+    }
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "model": "grammar.grammarerror",
+    "pk": 1,
+    "fields": {
+      "language": "english",
+      "error_code": "subject_verb_agreement",
+      "description": "Subjects and verbs must agree in number.",
+      "example_correct": "She runs every morning.",
+      "example_incorrect": "She run every morning."
+    }
+  },
+  {
+    "model": "grammar.grammarerror",
+    "pk": 2,
+    "fields": {
+      "language": "japanese",
+      "error_code": "particle_misuse",
+      "description": "Particles mark grammatical roles. 'を' marks the object, 'へ' marks direction.",
+      "example_correct": "私は学校へ行く。",
+      "example_incorrect": "私は学校へ行くを。"
+    }
+  },
+  {
+    "model": "grammar.grammarerror",
+    "pk": 3,
+    "fields": {
+      "language": "spanish",
+      "error_code": "verb_conjugation",
+      "description": "Verbs must be conjugated according to the subject.",
+      "example_correct": "Yo como una manzana.",
+      "example_incorrect": "Yo comer manzana."
+    }
+  },
+  {
+    "model": "grammar.grammarerror",
+    "pk": 4,
+    "fields": {
+      "language": "french",
+      "error_code": "verb_conjugation",
+      "description": "French verbs must be conjugated according to the subject.",
+      "example_correct": "Je vais à l’école.",
+      "example_incorrect": "Je aller à l’école."
+    }
+  },
+  {
+    "model": "grammar.grammarerror",
+    "pk": 5,
+    "fields": {
+      "language": "german",
+      "error_code": "verb_conjugation",
+      "description": "German verbs must be conjugated according to the subject.",
+      "example_correct": "Ich gehe zur Schule.",
+      "example_incorrect": "Ich gehen zur Schule."
+    }
+  }
+]

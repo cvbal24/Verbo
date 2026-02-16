@@ -1,0 +1,90 @@
+[
+  {
+    "model": "dialog.dialogmission",
+    "pk": 1,
+    "fields": {
+      "title": "Japanese Greeting Mission",
+      "description": "Practice greeting someone politely in Japanese",
+      "created_at": "2026-01-25T22:30:00Z"
+    }
+  },
+  {
+    "model": "dialog.dialognode",
+    "pk": 1,
+    "fields": {
+      "mission": 1,
+      "text": "こんにちは！元気ですか？",
+      "romaji_text": "Konnichiwa! Genki desu ka?",
+      "english_text": "Hello! How are you?",
+      "is_user_turn": false
+    }
+  },
+  {
+    "model": "dialog.dialogchoice",
+    "pk": 1,
+    "fields": {
+      "node": 1,
+      "choice_text": "元気です！",
+      "romaji_text": "Genki desu!",
+      "english_text": "I’m fine!",
+      "next_node": null,
+      "feedback": "Great response!"
+    }
+  },
+  {
+    "model": "dialog.dialogchoice",
+    "pk": 2,
+    "fields": {
+      "node": 1,
+      "choice_text": "まあまあです。",
+      "romaji_text": "Maa maa desu.",
+      "english_text": "I’m so-so.",
+      "next_node": null,
+      "feedback": "That’s an honest answer!"
+    }
+  },
+  {
+    "model": "dialog.dialogmission",
+    "pk": 2,
+    "fields": {
+      "title": "Korean Greeting Mission",
+      "description": "Practice greeting politely in Korean",
+      "created_at": "2026-01-25T22:30:00Z"
+    }
+  },
+  {
+    "model": "dialog.dialognode",
+    "pk": 2,
+    "fields": {
+      "mission": 2,
+      "text": "안녕하세요! 오늘 기분이 어때요?",
+      "romaji_text": "Annyeonghaseyo! Oneul gibun-i eottaeyo?",
+      "english_text": "Hello! How do you feel today?",
+      "is_user_turn": false
+    }
+  },
+  {
+    "model": "dialog.dialogchoice",
+    "pk": 3,
+    "fields": {
+      "node": 2,
+      "choice_text": "좋아요!",
+      "romaji_text": "Joayo!",
+      "english_text": "I feel good!",
+      "next_node": null,
+      "feedback": "Glad to hear that!"
+    }
+  },
+  {
+    "model": "dialog.dialogchoice",
+    "pk": 4,
+    "fields": {
+      "node": 2,
+      "choice_text": "피곤해요.",
+      "romaji_text": "Pigonhaeyo.",
+      "english_text": "I’m tired.",
+      "next_node": null,
+      "feedback": "Take some rest!"
+    }
+  }
+]

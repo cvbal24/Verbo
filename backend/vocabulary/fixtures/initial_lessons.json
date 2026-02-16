@@ -1,0 +1,18 @@
+[
+  {
+    "model": "vocabulary.lesson",
+    "pk": 1,
+    "fields": {
+      "language": "Japanese",
+      "title": "Japanese Basics"
+    }
+  },
+  {
+    "model": "vocabulary.lesson",
+    "pk": 2,
+    "fields": {
+      "language": "Chinese",
+      "title": "Chinese Basics"
+    }
+  }
+]

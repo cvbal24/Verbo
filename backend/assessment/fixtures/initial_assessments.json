@@ -1,0 +1,20 @@
+[
+  {
+    "model": "assessment.assessment",
+    "pk": 1,
+    "fields": {
+      "lesson": 1,
+      "title": "Basic Japanese Greetings",
+      "description": "An assessment covering simple Japanese greetings."
+    }
+  },
+  {
+    "model": "assessment.assessment",
+    "pk": 2,
+    "fields": {
+      "lesson": 2,
+      "title": "Basic Chinese Greetings",
+      "description": "An assessment covering simple Chinese greetings."
+    }
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "model": "assessment.question",
+    "pk": 1,
+    "fields": {
+      "assessment": 1,
+      "text": "ありがとう",
+      "romaji_text": "Arigatou",
+      "english_text": "Thank you",
+      "example_sentence_romaji": "Tomodachi ni arigatou to iimashita.",
+      "example_sentence_english": "I said thank you to my friend.",
+      "question_type": "mcq",
+      "difficulty": "easy"
+    }
+  },
+  {
+    "model": "assessment.question",
+    "pk": 2,
+    "fields": {
+      "assessment": 2,
+      "text": "你好",
+      "romaji_text": "Nǐ hǎo",
+      "english_text": "Hello",
+      "example_sentence_romaji": "Wǒ duì lǎoshī shuō nǐ hǎo.",
+      "example_sentence_english": "I said hello to the teacher.",
+      "question_type": "mcq",
+      "difficulty": "easy"
+    }
+  }
+]

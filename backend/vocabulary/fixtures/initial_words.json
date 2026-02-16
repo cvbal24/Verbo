@@ -1,0 +1,54 @@
+[
+  {
+    "model": "vocabulary.word",
+    "pk": 1,
+    "fields": {
+      "lesson": 1,
+      "word_text": "日本語",
+      "romaji_text": "Nihongo",
+      "english_text": "Japanese",
+      "example_sentence": "私は日本語を勉強しています。",
+      "example_sentence_romaji": "Watashi wa Nihongo o benkyou shiteimasu.",
+      "example_sentence_english": "I am studying Japanese."
+    }
+  },
+  {
+    "model": "vocabulary.word",
+    "pk": 2,
+    "fields": {
+      "lesson": 1,
+      "word_text": "ありがとう",
+      "romaji_text": "Arigatou",
+      "english_text": "Thank you",
+      "example_sentence": "友達にありがとうと言いました。",
+      "example_sentence_romaji": "Tomodachi ni arigatou to iimashita.",
+      "example_sentence_english": "I said thank you to my friend."
+    }
+  },
+  {
+    "model": "vocabulary.word",
+    "pk": 3,
+    "fields": {
+      "lesson": 2,
+      "word_text": "안녕하세요",
+      "romaji_text": "Annyeonghaseyo",
+      "english_text": "Hello",
+      "example_sentence": "선생님께 안녕하세요라고 인사했습니다.",
+      "example_sentence_romaji": "Seonsaengnimkke annyeonghaseyo rago insa haetsseumnida.",
+      "example_sentence_english": "I greeted the teacher by saying hello."
+    }
+  },
+  {
+    "model": "vocabulary.word",
+    "pk": 5,
+    "fields": {
+      "lesson": 3,
+      "word_text": "你好",
+      "romaji_text": "Nǐ hǎo",
+      "english_text": "Hello",
+      "example_sentence": "我对老师说你好。",
+      "example_sentence_romaji": "Wǒ duì lǎoshī shuō nǐ hǎo.",
+      "example_sentence_english": "I said hello to the teacher."
+    }
+  }
+]
