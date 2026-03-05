@@ -28,6 +28,8 @@ urlpatterns = [
     path("api/dialog/", include("dialog.urls")),
     path("api/auth/", include("authentication.urls")),
     path("api/progress/", include("progress.urls")),
+    path("api/audio/", include("audio.urls")),
+    path("api/voice/", include("voice.urls")),
    
 
     

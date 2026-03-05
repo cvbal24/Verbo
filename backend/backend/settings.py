@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'ai_content',
     'corsheaders',
     'authentication',
+    'audio',
+    'voice',
     
 ]
 
