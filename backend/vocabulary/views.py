@@ -1,6 +1,10 @@
 from rest_framework import viewsets
 from .models import Lesson, Word
 from .serializers import LessonSerializer, WordSerializer
+from rest_framework.permissions import IsAuthenticated
+
+class VocabularyViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
 
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
@@ -15,7 +19,7 @@ class WordViewSet(viewsets.ModelViewSet):
         lesson = self.request.query_params.get("lesson")
         difficulty = self.request.query_params.get("difficulty")
         tag = self.request.query_params.get("tag")
-        language = self.request.query_params.get("lang")  # NEW
+        language = self.request.query_params.get("lang") 
 
         if lesson:
             queryset = queryset.filter(lesson_id=lesson)

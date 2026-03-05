@@ -2,7 +2,6 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
-
 from django.db.models import Avg
 
 from .models import Assessment, Question, Answer, UserResponse
@@ -14,22 +13,22 @@ from .serializers import (
 )
 from progress.models import UserProgress, Achievement
 import random
+from rest_framework.permissions import IsAuthenticated
 
+class VocabularyViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
 
 class AssessmentViewSet(viewsets.ModelViewSet):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentSerializer
 
-
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
-
 class AnswerViewSet(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
-
 
 class UserResponseViewSet(viewsets.ModelViewSet):
     queryset = UserResponse.objects.all()

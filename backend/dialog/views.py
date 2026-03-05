@@ -5,7 +5,10 @@ from .models import DialogMission, DialogNode, DialogChoice
 from .serializers import DialogMissionSerializer, DialogNodeSerializer, DialogChoiceSerializer
 from progress.models import UserProgress  
 from progress.models import Achievement
+from rest_framework.permissions import IsAuthenticated
 
+class VocabularyViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
 
 class DialogMissionViewSet(viewsets.ModelViewSet):
     queryset = DialogMission.objects.all()
