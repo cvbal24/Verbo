@@ -17,9 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import health_check
+from django.http import JsonResponse
+
+def home(request):
+    return JsonResponse({"message": "Verbo API is running"})
 
 urlpatterns = [
-   
+
+    path("", home, name="home"),
     path("admin/", admin.site.urls),
     path("api/health/", health_check, name="health-check"),
     path("api/vocabulary/", include("vocabulary.urls")),
@@ -30,9 +35,9 @@ urlpatterns = [
     path("api/progress/", include("progress.urls")),
     path("api/audio/", include("audio.urls")),
     path("api/voice/", include("voice.urls")),
+    path("api/ai/", include("ai_chat.urls")),
+    path("api/ai-content/", include("ai_content.urls")),
    
-
-    
 ]
 
 

@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'assessment',
     'dialog',
     'progress',
-    'ai_partner',
+    'ai_chat',
     'ai_content',
     'corsheaders',
     'authentication',
