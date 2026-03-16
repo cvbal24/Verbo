@@ -1,72 +1,49 @@
 import os
-import json
-from django.http import JsonResponse
-from rest_framework.decorators import api_view
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from google import genai
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
-# STEP 1: Initialize the Google GenAI Client
 api_key = os.getenv("GENAI_API_KEY")
 client = genai.Client(api_key=api_key) if api_key else None
-
-# The name of the AI model we want to use.
 MODEL_NAME = "gemini-2.5-flash-lite"
 
 
-# STEP 2: Define the View (API Endpoint Handler)
-@csrf_exempt  # Disable CSRF for simplicity in this demo.
-@api_view(["POST"])  # Only allow POST requests.
-def chat_view(request):
+class ChatViewSet(viewsets.ViewSet):
     """
-    Handle a chat request from the frontend.
-
-    Expected request body (JSON):
-    {
-        "message": "How do I say 'thank you' in French?",
-        "language": "French"
-    }
-
-    Returns (JSON):
-    {
-        "reply": "In French, you say 'Merci'."
-    }
-    or
-    {
-        "error": "Something went wrong"
-    }
+    A ViewSet for handling chat requests with Google GenAI.
     """
-    if client is None:
-        return JsonResponse(
-            {"error": "GENAI_API_KEY is not set in environment variables."},
-            status=500,
-        )
 
-    try:
-        body = json.loads(request.body.decode("utf-8"))
-        user_message = body.get("message", "")
-        target_language = body.get("language", "any language")
+    @action(detail=False, methods=["post"])
+    def chat(self, request):
+        if client is None:
+            return Response(
+                {"error": "GENAI_API_KEY is not set in environment variables."},
+                status=500,
+            )
 
-        # Construct the tutoring prompt
-        prompt = (
-            f"You are a Foreign Language Tutor. "
-            f"The student is learning {target_language}. "
-            f"Their question: '{user_message}'. "
-            f"Respond with clear teaching, examples, and encouragement."
-        )
+        try:
+            user_message = request.data.get("message", "")
+            target_language = request.data.get("language", "any language")
 
-        # Send to AI model
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=prompt
-        )
+            prompt = (
+                f"You are a Foreign Language Tutor. "
+                f"The student is learning {target_language}. "
+                f"Their question: '{user_message}'. "
+                f"Respond with clear teaching, examples, and encouragement."
+            )
 
-        reply = response.text if response else "Sorry, I could not generate a reply."
+            response = client.models.generate_content(
+                model=MODEL_NAME,
+                contents=prompt
+            )
 
-        return JsonResponse({"reply": reply})
+            reply = response.text if response else "Sorry, I could not generate a reply."
+            return Response({"reply": reply})
 
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)

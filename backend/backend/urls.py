@@ -35,9 +35,8 @@ urlpatterns = [
     path("api/progress/", include("progress.urls")),
     path("api/audio/", include("audio.urls")),
     path("api/voice/", include("voice.urls")),
-    path("api/ai/", include("ai_chat.urls")),
     path("api/ai-content/", include("ai_content.urls")),
-   
+    path("api/ai-chat/", include("ai_chat.urls")),
 ]
 
 
