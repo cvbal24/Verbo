@@ -10,10 +10,17 @@ backend/
 ├── ai_content/
 ├── assessment/
 ├── audio/
+├── audio_manager/
 ├── authentication/
 ├── backend/
+├── core_config
 ├── dialog/
+├── flashcards/
 ├── grammar/
+├── idioms/
+├── mistakes/
+├── placement/
+├── preferences/
 ├── progress/
 ├── venv/
 ├── vocabulary/
@@ -42,9 +49,16 @@ backend/
 | **ai_content**  | Generates adaptive learning materials using AI.                         |
 | **assessment**  | Provides quizzes/tests to evaluate learner progress.                    |
 | **audio**       | Speech recognition and text-to-speech features.                         |
+| **audio_manager**  | Manages audio processing and flow.                                   |
 | **authentication** | User accounts, login, registration, and permissions.                 |
+| **core_config**    | Stores global settings and configs.                                  |
 | **dialog**      | Manages tutoring prompts and structured dialogue flows.                 |
+| **flashcards**  | Manages flashcard learning system.                                      |
 | **grammar**     | Grammar explanations, parsing, and correction logic.                    |
+| **idioms**      | Handles idioms and expressions.                                         |
+| **mistakes**    | Tracks and analyzes user errors.                                        |
+| **placement**   | Determines user skill level.                                            |
+| **preferences** | Stores user preferences/settings                                        |
 | **progress**    | Tracks learner progress, achievements, and analytics.                   |
 | **vocabulary**  | Word banks, flashcards, and vocabulary exercises.                       |
 | **voice**       | Voice-based interaction and conversational practice.                    |
