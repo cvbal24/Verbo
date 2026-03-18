@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,13 +21,32 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
+def _get_bool_env(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _get_list_env(name, default=""):
+    value = os.getenv(name, default)
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+ENVIRONMENT = os.getenv("DJANGO_ENV", "local").strip().lower()
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-hoh^)$wdygyz5o0q4s21k)5v4^oj+ov$94(4%37xyng1t8uhrm'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    if ENVIRONMENT == "local":
+        SECRET_KEY = "local-dev-secret-key-change-me"
+    else:
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set outside local development")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = _get_bool_env("DJANGO_DEBUG", default=(ENVIRONMENT == "local"))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = _get_list_env("DJANGO_ALLOWED_HOSTS", default="localhost,127.0.0.1")
 
 
 # Application definition
@@ -37,8 +58,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'assessment',
+    'grammar',
+    'dialog',
+    'ai_chat',
+    'ai_content',
+    'voice',
+    'audio',
     'progress',
     'flashcards',
+    'vocabulary',
     'placement',
     'preferences',
     'achievements',
@@ -51,6 +83,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -128,3 +161,28 @@ STATIC_URL = 'static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = 'media'
+
+
+# Production security hardening (use reverse proxy headers when deployed behind one)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = _get_bool_env("DJANGO_SECURE_SSL_REDIRECT", default=(not DEBUG))
+SESSION_COOKIE_SECURE = _get_bool_env("DJANGO_SESSION_COOKIE_SECURE", default=(not DEBUG))
+CSRF_COOKIE_SECURE = _get_bool_env("DJANGO_CSRF_COOKIE_SECURE", default=(not DEBUG))
+
+SECURE_HSTS_SECONDS = int(os.getenv("DJANGO_SECURE_HSTS_SECONDS", "31536000" if not DEBUG else "0"))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = _get_bool_env("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", default=(not DEBUG))
+SECURE_HSTS_PRELOAD = _get_bool_env("DJANGO_SECURE_HSTS_PRELOAD", default=(not DEBUG))
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+}
+
+CORS_ALLOWED_ORIGINS = _get_list_env("DJANGO_CORS_ALLOWED_ORIGINS")
+CORS_ALLOW_CREDENTIALS = True

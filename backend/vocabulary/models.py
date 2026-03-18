@@ -15,6 +15,7 @@ class Word(models.Model):
     script = models.CharField(max_length=100)
     romaji = models.CharField(max_length=100, blank=True, default="")
     english = models.CharField(max_length=100, default="")
+    audio_url = models.URLField(blank=True, default="")
     difficulty = models.IntegerField(default=1)
     tags = models.CharField(max_length=255, blank=True, default="")
     mastery_count = models.IntegerField(default=0)

@@ -1,23 +1,50 @@
 from rest_framework import serializers
-from .models import UserProgress, Achievement
+from .models import CompletedLesson, Lesson, ProgressSnapshot, QuizResult, UserVocabulary, Vocabulary
 
-class UserProgressSerializer(serializers.ModelSerializer):
+
+class LessonSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserProgress
+        model = Lesson
+        fields = ["id", "title", "language"]
+
+
+class CompletedLessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompletedLesson
+        fields = ["id", "user", "lesson", "completed_at"]
+        read_only_fields = ["user", "completed_at"]
+
+
+class QuizResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuizResult
+        fields = ["id", "user", "lesson", "score", "total", "taken_at"]
+        read_only_fields = ["user", "taken_at"]
+
+
+class VocabularySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vocabulary
+        fields = ["id", "word", "meaning"]
+
+
+class UserVocabularySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserVocabulary
+        fields = ["id", "user", "vocab", "learned_at"]
+        read_only_fields = ["user", "learned_at"]
+
+
+class ProgressSnapshotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProgressSnapshot
         fields = [
             "id",
             "user",
-            "lesson",
-            "mission",
-            "current_node",
-            "assessment",
-            "completed",
-            "score",
-            "updated_at",
+            "lessons_completed",
+            "quizzes_taken",
+            "average_quiz_score",
+            "vocabulary_learned",
+            "created_at",
         ]
-        read_only_fields = ["updated_at"]
-
-class AchievementSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Achievement
-        fields = ["id", "user", "title", "description", "earned_at"]
+        read_only_fields = ["user", "created_at"]

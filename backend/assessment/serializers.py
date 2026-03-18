@@ -1,58 +1,33 @@
 from rest_framework import serializers
 from .models import Assessment, Question, Answer, UserResponse
 
-# --- Answer ---
+
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
-        fields = [
-            "id",
-            "text",
-            "romaji_text",
-            "english_text",
-            "example_sentence_romaji",
-            "example_sentence_english",
-            "is_correct",
-        ]
+        fields = ["id", "question", "text", "romaji_text", "english_text", "is_correct"]
 
-# --- Question ---
+
 class QuestionSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Question
-        fields = [
-            "id",
-            "text",
-            "romaji_text",
-            "english_text",
-            "example_sentence_romaji",
-            "example_sentence_english",
-            "question_type",
-            "difficulty",
-            "answers",
-        ]
+        fields = ["id", "assessment", "text", "romaji_text", "english_text", "difficulty", "answers"]
 
-# --- Assessment ---
+
 class AssessmentSerializer(serializers.ModelSerializer):
     questions = QuestionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Assessment
-        fields = [
-            "id",
-            "title",
-            "description",
-            "created_at",
-            "lesson",      # will be nested in LessonSerializer
-            "questions",
-        ]
+        fields = ["id", "title", "description", "questions"]
 
-# --- UserResponse ---
+
 class UserResponseSerializer(serializers.ModelSerializer):
-    question = QuestionSerializer(read_only=True)
-    selected_answer = AnswerSerializer(read_only=True)
-    user = serializers.StringRelatedField(read_only=True)  # shows username
+    question_detail = QuestionSerializer(source="question", read_only=True)
+    selected_answer_detail = AnswerSerializer(source="selected_answer", read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = UserResponse
@@ -60,8 +35,12 @@ class UserResponseSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "question",
-            "answer_text",
+            "question_detail",
             "selected_answer",
+            "selected_answer_detail",
+            "answer_text",
             "score",
-            "submitted_at",
+            "feedback",
+            "created_at",
         ]
+        read_only_fields = ["user", "score", "feedback", "created_at"]

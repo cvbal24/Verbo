@@ -1,26 +1,25 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import DialogMission, DialogNode, DialogChoice
 from .serializers import DialogMissionSerializer, DialogNodeSerializer, DialogChoiceSerializer
-from progress.models import UserProgress  
-from progress.models import Achievement
-from rest_framework.permissions import IsAuthenticated
-
-class VocabularyViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+from achievements.models import Achievement
 
 class DialogMissionViewSet(viewsets.ModelViewSet):
     queryset = DialogMission.objects.all()
     serializer_class = DialogMissionSerializer
+    permission_classes = [IsAuthenticated]
 
 class DialogNodeViewSet(viewsets.ModelViewSet):
     queryset = DialogNode.objects.all()
     serializer_class = DialogNodeSerializer
+    permission_classes = [IsAuthenticated]
 
 class DialogChoiceViewSet(viewsets.ModelViewSet):
     queryset = DialogChoice.objects.all()
     serializer_class = DialogChoiceSerializer
+    permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=["post"])
     def select(self, request, pk=None):
@@ -28,25 +27,15 @@ class DialogChoiceViewSet(viewsets.ModelViewSet):
         feedback = choice.feedback or "No feedback available."
         next_node = choice.next_node
 
-        # Log progress
-        user = request.user if request.user.is_authenticated else None
-        if user and choice.node.mission:
-            UserProgress.objects.update_or_create(
-                user=user,
-                mission=choice.node.mission,
-                defaults={
-                    "current_node": next_node,
-                    "completed": next_node.is_end if next_node else False,
-                    "score": 0.0
-                }
+        # Record mission completion as a user achievement when there is no next node.
+        if request.user.is_authenticated and next_node is None:
+            Achievement.objects.get_or_create(
+                user=request.user,
+                category="milestone",
+                title="Mission Completed",
+                milestone=f"You finished {choice.node.mission.title}!",
+                defaults={"metadata": {"mission_id": choice.node.mission_id}},
             )
-            if user and next_node and next_node.is_end:
-                
-                Achievement.objects.get_or_create(
-                 user=user,
-                 title="Mission Completed",
-                 defaults={"description": f"You finished {choice.node.mission.title}!"}
-              )
 
         response_data = {
             "selected_choice": choice.choice_text,

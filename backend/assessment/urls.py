@@ -6,7 +6,7 @@ router = DefaultRouter()
 router.register(r"assessments", AssessmentViewSet)
 router.register(r"questions", QuestionViewSet)
 router.register(r"answers", AnswerViewSet)
-router.register(r"user-responses", UserResponseViewSet)
+router.register(r"user-responses", UserResponseViewSet, basename="user-response")
 router.register(r'adaptive', AdaptiveAssessmentViewSet, basename="adaptive")
 
 

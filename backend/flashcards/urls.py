@@ -1,6 +1,12 @@
-from django.urls import path
-from . import views
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
+
+from .views import FlashcardReviewViewSet, FlashcardViewSet
+
+router = DefaultRouter()
+router.register(r"cards", FlashcardViewSet, basename="flashcard")
+router.register(r"reviews", FlashcardReviewViewSet, basename="flashcard-review")
 
 urlpatterns = [
-    path('review-list/', views.review_list, name='review_list'),
+    path("", include(router.urls)),
 ]

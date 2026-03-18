@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from django.db.models import Avg
 
 from .models import Assessment, Question, Answer, UserResponse
@@ -11,28 +11,32 @@ from .serializers import (
     AnswerSerializer,
     UserResponseSerializer,
 )
-from progress.models import UserProgress, Achievement
-import random
-from rest_framework.permissions import IsAuthenticated
-
-class VocabularyViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+from achievements.models import Achievement
 
 class AssessmentViewSet(viewsets.ModelViewSet):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentSerializer
+    permission_classes = [IsAuthenticated]
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
 
 class AnswerViewSet(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
+    permission_classes = [IsAuthenticated]
 
 class UserResponseViewSet(viewsets.ModelViewSet):
-    queryset = UserResponse.objects.all()
     serializer_class = UserResponseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UserResponse.objects.filter(user=self.request.user).order_by("-created_at")
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -63,42 +67,31 @@ class UserResponseViewSet(viewsets.ModelViewSet):
             question.difficulty = max(question.difficulty - 1, 1)
         question.save()
 
-        # Log progress
-        user = request.user if request.user.is_authenticated else None
-        if user and question.assessment:
-            total_questions = question.assessment.questions.count()
-            answered = UserResponse.objects.filter(
-                user=user, question__assessment=question.assessment
-            ).count()
-            completed = answered >= total_questions
+        total_questions = question.assessment.questions.count()
+        answered = UserResponse.objects.filter(
+            user=request.user,
+            question__assessment=question.assessment,
+        ).count()
+        completed = answered >= total_questions
 
-            UserProgress.objects.update_or_create(
-                user=user,
-                assessment=question.assessment,
-                defaults={
-                    "score": score,  # could be averaged later
-                    "completed": completed,
-                },
+        if completed:
+            Achievement.objects.get_or_create(
+                user=request.user,
+                category="milestone",
+                title="Quiz Completed",
+                milestone=f"You finished {question.assessment.title}!",
+                defaults={"metadata": {"assessment_id": question.assessment_id}},
             )
-
-            if completed:
-                Achievement.objects.get_or_create(
-                    user=user,
-                    title="Quiz Completed",
-                    defaults={
-                        "description": f"You finished {question.assessment.title}!"
-                    },
-                )
 
         return Response(UserResponseSerializer(user_response).data)
 
 
 class AdaptiveAssessmentViewSet(viewsets.ViewSet):
-    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=["get"])
     def next_question(self, request):
-        user = request.user if request.user.is_authenticated else None
-        if not user:
-            return Response({"error": "Authentication required"}, status=403)
+        user = request.user
 
         # Calculate learner’s average score
         responses = UserResponse.objects.filter(user=user)
@@ -121,5 +114,7 @@ class AdaptiveAssessmentViewSet(viewsets.ViewSet):
         return Response({
             "question_id": question.id,
             "text": question.text,
+            "romaji_text": question.romaji_text,
+            "english_text": question.english_text,
             "difficulty": difficulty,
         })

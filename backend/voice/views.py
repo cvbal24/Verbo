@@ -5,9 +5,11 @@ from .models import VoiceRecording
 from .serializers import VoiceRecordingSerializer
 
 class VoiceRecordingViewSet(viewsets.ModelViewSet):
-    queryset = VoiceRecording.objects.all()
     serializer_class = VoiceRecordingSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return VoiceRecording.objects.filter(user=self.request.user).order_by("-uploaded_at")
 
     def perform_create(self, serializer):
         # Save recording

@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import status
 from .models import CustomContentAnalysis
 from .permissions import IsPremiumUser
 from grammar.services import run_grammar_check
@@ -21,7 +22,7 @@ class CustomContentLearnerViewSet(viewsets.ViewSet):
         input_text = request.data.get("input_text")
 
         if not input_text:
-            return Response({"error": "No input_text provided"}, status=400)
+            return Response({"error": "No input_text provided"}, status=status.HTTP_400_BAD_REQUEST)
 
         # --- AI logic placeholder ---
         # In production, integrate with NLP/AI models.
@@ -52,10 +53,10 @@ class CustomContentLearnerViewSet(viewsets.ViewSet):
         )
 
         explanations, grammar_check = run_grammar_check(
-         user=request.user,
-         input_text=input_text,
-         romaji_text="",
-        english_text=input_text  # or translation if available
+            user=request.user,
+            input_text=input_text,
+            romaji_text="",
+            english_text=input_text,
         )
 
 
@@ -64,6 +65,8 @@ class CustomContentLearnerViewSet(viewsets.ViewSet):
             "input_text": input_text,
             "generated_vocab": generated_vocab,
             "grammar_feedback": grammar_feedback,
+            "grammar_explanations": explanations,
+            "grammar_check_id": grammar_check.id,
             "practice_materials": practice_materials,
             "created_at": analysis.created_at
         })

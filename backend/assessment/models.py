@@ -47,4 +47,5 @@ class UserResponse(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Response by {self.user.username} to Q{self.question.id}"
+        username = self.user.username if self.user else "Anonymous"
+        return f"Response by {username} to Q{self.question.id}"
