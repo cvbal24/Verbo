@@ -1,10 +1,12 @@
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
+
+from grammar.services import run_grammar_check
+
 from .models import CustomContentAnalysis
 from .permissions import IsPremiumUser
-from grammar.services import run_grammar_check
+from .services import generate_personalized_content
 
 
 class CustomContentLearnerViewSet(viewsets.ViewSet):
@@ -18,39 +20,31 @@ class CustomContentLearnerViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=["post"])
     def analyze(self, request):
-        user = request.user
-        input_text = request.data.get("input_text")
+        input_text = (request.data.get("input_text") or "").strip()
+        target_language = (request.data.get("target_language") or "Japanese").strip()
+        try:
+            difficulty_level = int(request.data.get("difficulty_level", 1))
+        except (TypeError, ValueError):
+            return Response(
+                {"error": "difficulty_level must be an integer between 1 and 5"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if not input_text:
-            return Response({"error": "No input_text provided"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "input_text is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        # --- AI logic placeholder ---
-        # In production, integrate with NLP/AI models.
-        # For now, simulate analysis.
-        generated_vocab = [
-            {"word": "海", "romaji": "umi", "english": "ocean"},
-            {"word": "きれい", "romaji": "kirei", "english": "beautiful"}
-        ]
-
-        grammar_feedback = {
-            "error_code": "particle_misuse",
-            "description": "In Japanese, particles mark grammatical roles. 'を' marks the object, 'へ' marks direction.",
-            "example_correct": "私は学校へ行く。",
-            "example_incorrect": "私は学校へ行くを。"
-        }
-
-        practice_materials = [
-            {"type": "fill_in_blank", "question": "私は学校___行く。", "answer": "へ"},
-            {"type": "translation", "question": "Translate: The ocean is beautiful.", "answer": "海はきれいです。"}
-        ]
-
-        analysis = CustomContentAnalysis.objects.create(
-            user=user,
+        generated_content = generate_personalized_content(
             input_text=input_text,
-            generated_vocab=generated_vocab,
-            grammar_feedback=grammar_feedback,
-            practice_materials=practice_materials
+            target_language=target_language,
+            difficulty_level=difficulty_level,
         )
+        generated_vocab = generated_content["generated_vocab"]
+        practice_materials = generated_content["practice_materials"]
+        learner_profile = generated_content["learner_profile"]
+        generation_source = generated_content["generation_source"]
 
         explanations, grammar_check = run_grammar_check(
             user=request.user,
@@ -59,14 +53,33 @@ class CustomContentLearnerViewSet(viewsets.ViewSet):
             english_text=input_text,
         )
 
+        grammar_feedback = {
+            "detected_errors": grammar_check.feedback.get("errors", []),
+            "explanations": explanations,
+            "summary": {
+                "error_count": len(grammar_check.feedback.get("errors", [])),
+                "sentence_count": learner_profile["sentence_count"],
+                "token_count": learner_profile["token_count"],
+            },
+            "ai_priority_issues": generated_content["grammar_feedback"].get("priority_issues", []),
+        }
+
+        analysis = CustomContentAnalysis.objects.create(
+            user=request.user,
+            input_text=input_text,
+            generated_vocab=generated_vocab,
+            grammar_feedback=grammar_feedback,
+            practice_materials=practice_materials,
+        )
 
         return Response({
             "id": analysis.id,
             "input_text": input_text,
             "generated_vocab": generated_vocab,
             "grammar_feedback": grammar_feedback,
-            "grammar_explanations": explanations,
             "grammar_check_id": grammar_check.id,
             "practice_materials": practice_materials,
+            "learner_profile": learner_profile,
+            "generation_source": generation_source,
             "created_at": analysis.created_at
         })
